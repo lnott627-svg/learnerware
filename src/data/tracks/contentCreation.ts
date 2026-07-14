@@ -278,7 +278,7 @@ export const contentLessons: Lesson[] = [
       {
         kind: 'info',
         heading: 'Every caption has a job',
-        body: 'A caption should either add context the visual can\'t, deepen the hook, or drive a specific action. "Cute pic 📸" wastes prime real estate that could be doing real work.',
+        body: 'A caption should either add context the visual can\'t, deepen the hook, or drive a specific action. "Cute pic" wastes prime real estate that could be doing real work.',
         bullets: [
           'First line repeats or extends the hook — most captions get cut off after 1-2 lines',
           'Middle adds context, story, or value the image/video alone can\'t',
@@ -315,7 +315,7 @@ export const contentLessons: Lesson[] = [
         kind: 'question',
         question: {
           type: 'short',
-          prompt: 'Rewrite this weak caption to do more work: "New product just dropped! 🎉"',
+          prompt: 'Rewrite this weak caption to do more work: "New product just dropped!"',
           placeholder: 'e.g. "We spent 6 months getting this recipe right — here\'s what changed (and why it\'s worth the wait)."',
           guidance: 'A strong answer adds a hook, some real context or story, and points toward an action — not just an announcement.',
         },
@@ -735,6 +735,7 @@ export const contentEndTasks: (BuilderEndTask | MultiCaptionEndTask)[] = [
     deliverableType: 'Caption Set',
     xp: 90,
     count: 5,
+    labels: ['Announcement', 'Educational tip', 'Behind-the-scenes moment', 'Testimonial-style post', 'Direct CTA to sign up'],
     brief:
       'Brief: "Northside Cycles" is a neighborhood bike shop launching a weekend group ride series for beginners. Write 5 captions across formats: an announcement, an educational tip, a behind-the-scenes moment, a testimonial-style post, and a direct CTA post to sign up for the first ride.',
   },

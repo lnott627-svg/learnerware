@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { getUnit, lessons, units } from '../data/content'
+import { getModule, lessons } from '../data/content'
 
 export type Pace = 'chill' | 'steady' | 'intense'
 
@@ -9,14 +9,22 @@ interface LessonResult {
   total: number
 }
 
-export interface PortfolioPiece {
+export interface SimulatorTranscriptMessage {
+  role: 'user' | 'assistant'
+  content: string
+}
+
+export interface PortfolioEntry {
   id: string
-  unitId: string
+  endTaskId: string
+  moduleId: string
   trackId: string
   title: string
   deliverableType: string
   content: string
   createdAt: string
+  score?: number
+  scoreSummary?: string
 }
 
 interface LearnerwareState {
@@ -33,17 +41,15 @@ interface LearnerwareState {
   lastActiveDate: string | null
 
   completedLessonIds: string[]
-  completedUnitIds: string[]
-  microTaskAnswers: Record<string, string>
-  portfolioPieces: PortfolioPiece[]
+  completedModuleIds: string[]
+  portfolio: PortfolioEntry[]
 
   hasCompletedFirstLessonEver: boolean
   lastLessonXpGained: number
-  lastLessonStreakBefore: number
 
   selectTrack: (trackId: string) => void
-  recordMicroTaskAnswer: (lessonId: string, text: string) => void
   completeLesson: (lessonId: string, result: LessonResult) => void
+  submitEndTask: (entry: Omit<PortfolioEntry, 'id' | 'createdAt'>, xpReward: number) => void
   createAccount: (name: string, email: string) => void
   setPace: (pace: Pace) => void
   resetProgress: () => void
@@ -65,26 +71,11 @@ function inferPace(ratio: number): Pace {
   return 'chill'
 }
 
-function buildPortfolioPiece(
-  unitId: string,
-  answers: Record<string, string>,
-): PortfolioPiece | null {
-  const unit = getUnit(unitId)
-  if (!unit) return null
-  const unitLessons = unit.lessonIds.map((id) => lessons.find((l) => l.id === id)).filter(Boolean)
-  const parts = unitLessons.map((lesson) => {
-    const answer = answers[lesson!.id]
-    return `• ${lesson!.title}: ${answer && answer.trim() ? answer.trim() : '(add your own take here)'}`
-  })
-  return {
-    id: `${unit.portfolioPiece.id}-${Date.now()}`,
-    unitId: unit.id,
-    trackId: unit.trackId,
-    title: unit.portfolioPiece.title,
-    deliverableType: unit.portfolioPiece.deliverableType,
-    content: parts.join('\n\n'),
-    createdAt: new Date().toISOString(),
-  }
+function bumpStreak(lastActiveDate: string | null, streakCount: number) {
+  const today = todayISO()
+  if (lastActiveDate === today) return streakCount
+  if (lastActiveDate && daysBetween(lastActiveDate, today) === 1) return streakCount + 1
+  return 1
 }
 
 export const useStore = create<LearnerwareState>()(
@@ -103,20 +94,13 @@ export const useStore = create<LearnerwareState>()(
       lastActiveDate: null,
 
       completedLessonIds: [],
-      completedUnitIds: [],
-      microTaskAnswers: {},
-      portfolioPieces: [],
+      completedModuleIds: [],
+      portfolio: [],
 
       hasCompletedFirstLessonEver: false,
       lastLessonXpGained: 0,
-      lastLessonStreakBefore: 0,
 
       selectTrack: (trackId) => set({ selectedTrackId: trackId }),
-
-      recordMicroTaskAnswer: (lessonId, text) =>
-        set((state) => ({
-          microTaskAnswers: { ...state.microTaskAnswers, [lessonId]: text },
-        })),
 
       completeLesson: (lessonId, result) => {
         const state = get()
@@ -124,33 +108,13 @@ export const useStore = create<LearnerwareState>()(
         if (!lesson) return
 
         const today = todayISO()
-        let nextStreak = state.streakCount
-        if (state.lastActiveDate === today) {
-          // already active today, streak unchanged
-        } else if (state.lastActiveDate && daysBetween(state.lastActiveDate, today) === 1) {
-          nextStreak = state.streakCount + 1
-        } else {
-          nextStreak = 1
-        }
+        const nextStreak = bumpStreak(state.lastActiveDate, state.streakCount)
 
         const alreadyCompleted = state.completedLessonIds.includes(lessonId)
         const xpGain = alreadyCompleted ? Math.round(lesson.xp * 0.25) : lesson.xp
         const completedLessonIds = alreadyCompleted
           ? state.completedLessonIds
           : [...state.completedLessonIds, lessonId]
-
-        // check whether this completion finishes the unit
-        const unit = getUnit(lesson.unitId)
-        let completedUnitIds = state.completedUnitIds
-        let portfolioPieces = state.portfolioPieces
-        if (unit && !state.completedUnitIds.includes(unit.id)) {
-          const allDone = unit.lessonIds.every((id) => completedLessonIds.includes(id))
-          if (allDone) {
-            completedUnitIds = [...state.completedUnitIds, unit.id]
-            const piece = buildPortfolioPiece(unit.id, state.microTaskAnswers)
-            if (piece) portfolioPieces = [...state.portfolioPieces, piece]
-          }
-        }
 
         let pace = state.pace
         let paceInferred = state.paceInferred
@@ -162,16 +126,40 @@ export const useStore = create<LearnerwareState>()(
 
         set({
           completedLessonIds,
-          completedUnitIds,
-          portfolioPieces,
           xp: state.xp + xpGain,
           streakCount: nextStreak,
           lastActiveDate: today,
           hasCompletedFirstLessonEver: true,
           lastLessonXpGained: xpGain,
-          lastLessonStreakBefore: state.streakCount,
           pace,
           paceInferred,
+        })
+      },
+
+      submitEndTask: (entry, xpReward) => {
+        const state = get()
+        const today = todayISO()
+        const nextStreak = bumpStreak(state.lastActiveDate, state.streakCount)
+        const mod = getModule(entry.moduleId)
+
+        const portfolioEntry: PortfolioEntry = {
+          ...entry,
+          id: `${entry.endTaskId}-${Date.now()}`,
+          createdAt: new Date().toISOString(),
+        }
+
+        const completedModuleIds =
+          mod && !state.completedModuleIds.includes(mod.id)
+            ? [...state.completedModuleIds, mod.id]
+            : state.completedModuleIds
+
+        set({
+          portfolio: [...state.portfolio, portfolioEntry],
+          completedModuleIds,
+          xp: state.xp + xpReward,
+          streakCount: nextStreak,
+          lastActiveDate: today,
+          lastLessonXpGained: xpReward,
         })
       },
 
@@ -185,23 +173,13 @@ export const useStore = create<LearnerwareState>()(
           streakCount: 0,
           lastActiveDate: null,
           completedLessonIds: [],
-          completedUnitIds: [],
-          microTaskAnswers: {},
-          portfolioPieces: [],
+          completedModuleIds: [],
+          portfolio: [],
           hasCompletedFirstLessonEver: false,
           pace: 'steady',
           paceInferred: false,
         }),
     }),
-    { name: 'learnerware-state' },
+    { name: 'learnerware-state-v2' },
   ),
 )
-
-export function clientReadyChecklist() {
-  return units.map((unit) => ({
-    unitId: unit.id,
-    trackId: unit.trackId,
-    label: unit.portfolioPiece.title,
-    unitTitle: unit.title,
-  }))
-}

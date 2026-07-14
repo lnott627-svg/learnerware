@@ -2,58 +2,57 @@ import { useState } from 'react'
 import clsx from 'clsx'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Check, X } from 'lucide-react'
-import type { McQuestion } from '../../data/types'
+import type { TfQuestion } from '../../data/types'
 import Button from '../../components/Button'
 
-export default function McQuestionView({
+export default function TfQuestionView({
   question,
   onNext,
 }: {
-  question: McQuestion
+  question: TfQuestion
   onNext: (correct: boolean) => void
 }) {
-  const [selected, setSelected] = useState<number | null>(null)
+  const [selected, setSelected] = useState<boolean | null>(null)
   const [checked, setChecked] = useState(false)
 
-  const isCorrect = selected === question.correctIndex
+  const isCorrect = selected === question.correctAnswer
+
+  const optionState = (value: boolean) => {
+    const isSelected = selected === value
+    const isRightAnswer = value === question.correctAnswer
+    if (checked && isRightAnswer) return 'border-mint-600 bg-mint-200 text-ink-950'
+    if (checked && isSelected && !isCorrect) return 'border-pink-600 bg-pink-200 text-ink-950'
+    if (isSelected) return 'border-ink-950 bg-ink-950 text-white'
+    return 'border-ink-200 bg-white text-ink-950'
+  }
 
   return (
     <div className="flex-1 flex flex-col px-6 pt-4">
       <p className="text-xs font-display font-bold text-ink-300 uppercase tracking-wide mb-3">
-        Multiple choice
+        True or false
       </p>
       <h2 className="font-display font-extrabold text-2xl text-ink-950 mb-7 leading-snug">
         {question.prompt}
       </h2>
 
-      <div className="flex flex-col gap-3 flex-1">
-        {question.options.map((opt, i) => {
-          const isSelected = selected === i
-          const isRightAnswer = i === question.correctIndex
-          let stateClasses = 'border-ink-200 bg-white text-ink-950'
-          if (checked && isRightAnswer) {
-            stateClasses = 'border-mint-600 bg-mint-200 text-ink-950'
-          } else if (checked && isSelected && !isCorrect) {
-            stateClasses = 'border-pink-600 bg-pink-200 text-ink-950'
-          } else if (isSelected) {
-            stateClasses = 'border-ink-950 bg-ink-950 text-white'
-          }
-          return (
+      <div className="flex-1 flex flex-col justify-center gap-4">
+        <div className="grid grid-cols-2 gap-3">
+          {[true, false].map((value) => (
             <button
-              key={i}
+              key={String(value)}
               disabled={checked}
-              onClick={() => setSelected(i)}
+              onClick={() => setSelected(value)}
               className={clsx(
-                'text-left rounded-2xl border-2 px-4 py-3.5 text-[15px] font-medium transition-colors flex items-center justify-between gap-3',
-                stateClasses,
+                'rounded-2xl border-2 py-8 text-center font-display font-bold text-lg transition-colors flex flex-col items-center gap-2',
+                optionState(value),
               )}
             >
-              <span>{opt}</span>
-              {checked && isRightAnswer && <Check size={18} strokeWidth={2.5} className="shrink-0" />}
-              {checked && isSelected && !isCorrect && <X size={18} strokeWidth={2.5} className="shrink-0" />}
+              {value ? 'True' : 'False'}
+              {checked && value === question.correctAnswer && <Check size={20} strokeWidth={2.5} />}
+              {checked && selected === value && !isCorrect && <X size={20} strokeWidth={2.5} />}
             </button>
-          )
-        })}
+          ))}
+        </div>
       </div>
 
       <div className="py-6 sticky bottom-0 bg-paper-50">

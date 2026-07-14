@@ -83,6 +83,7 @@ export interface MultiCaptionEndTask extends EndTaskBase {
   kind: 'multi-caption'
   brief: string
   count: number
+  labels: string[]
 }
 
 export type EndTask = BuilderEndTask | SimulatorEndTask | MultiCaptionEndTask
@@ -104,4 +105,14 @@ export interface Track {
   icon: LucideIcon
   pastelIndex: number
   moduleIds: string[]
+}
+
+export interface Template {
+  id: string
+  title: string
+  description: string
+  category: string
+  unlockModuleId: string | null // null = unlocked from the start
+  icon: LucideIcon
+  body: string
 }

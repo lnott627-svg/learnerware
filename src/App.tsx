@@ -3,6 +3,7 @@ import Splash from './screens/Splash'
 import TrackSelect from './screens/TrackSelect'
 import LessonPlayer from './screens/LessonPlayer'
 import LessonComplete from './screens/LessonComplete'
+import EndTask from './screens/EndTask'
 import Home from './screens/Home'
 import Profile from './screens/Profile'
 import Templates from './screens/Templates'
@@ -23,6 +24,7 @@ function App() {
         <Route path="/tracks" element={<TrackSelect />} />
         <Route path="/lesson/:lessonId" element={<LessonPlayer />} />
         <Route path="/lesson/:lessonId/complete" element={<LessonComplete />} />
+        <Route path="/module/:moduleId/task" element={<EndTask />} />
         <Route path="/home" element={<Home />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/templates" element={<Templates />} />

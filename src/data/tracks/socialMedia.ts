@@ -224,7 +224,7 @@ export const smmLessons: Lesson[] = [
           type: 'mc',
           prompt: 'Which bio line is doing its job best?',
           options: [
-            '"Living my best life ✨"',
+            '"Living my best life"',
             '"Helping busy parents cook healthy dinners in 20 minutes — new recipe every Tuesday"',
             '"Content creator | Dreamer | Coffee addict"',
             '"DM for collabs"',
@@ -711,7 +711,7 @@ export const smmEndTasks: BuilderEndTask[] = [
     deliverableType: 'Profile Audit',
     xp: 60,
     brief:
-      'Brief: "Maple & Co." is a small home bakery. Their current bio just says "Baker. Wife. Mom. Coffee lover ☕." They want more local customers to find them and place custom cake orders.',
+      'Brief: "Maple & Co." is a small home bakery. Their current bio just says "Baker. Wife. Mom. Coffee lover." They want more local customers to find them and place custom cake orders.',
     prompts: [
       { label: 'New bio (under 150 characters)', placeholder: 'Who they help + what they offer + one clear next step...' },
       { label: 'Highlight covers you\'d create', placeholder: 'e.g. Menu, Reviews, How to Order, Delivery Area...' },
