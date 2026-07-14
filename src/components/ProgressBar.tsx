@@ -12,8 +12,8 @@ interface ProgressBarProps {
 export default function ProgressBar({
   value,
   className,
-  colorClassName = 'bg-xp-500',
-  trackClassName = 'bg-cloud-200',
+  colorClassName = 'bg-ink-950',
+  trackClassName = 'bg-ink-100',
   height = 12,
 }: ProgressBarProps) {
   const clamped = Math.max(0, Math.min(100, value))

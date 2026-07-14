@@ -8,10 +8,7 @@ interface CardProps extends HTMLAttributes<HTMLDivElement> {
 export default function Card({ className, children, ...props }: CardProps) {
   return (
     <div
-      className={clsx(
-        'bg-white rounded-3xl p-5 shadow-[var(--shadow-card)] border border-cloud-200',
-        className,
-      )}
+      className={clsx('bg-white rounded-3xl p-5 shadow-[var(--shadow-card)]', className)}
       {...props}
     >
       {children}

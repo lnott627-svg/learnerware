@@ -1,4 +1,6 @@
-export type QuestionType = 'mc' | 'order' | 'fill' | 'sort'
+import type { LucideIcon } from 'lucide-react'
+
+export type QuestionType = 'mc' | 'tf' | 'short'
 
 export interface McQuestion {
   type: 'mc'
@@ -9,35 +11,22 @@ export interface McQuestion {
   incorrectFeedback: string
 }
 
-export interface OrderQuestion {
-  type: 'order'
+export interface TfQuestion {
+  type: 'tf'
   prompt: string
-  helper?: string
-  items: string[] // in correct order
+  correctAnswer: boolean
+  correctFeedback: string
+  incorrectFeedback: string
 }
 
-export interface FillQuestion {
-  type: 'fill'
+export interface ShortQuestion {
+  type: 'short'
   prompt: string
-  template: string // sentence with a single "___" marker
-  options: string[] // word bank, includes correct answer + distractors
-  correctAnswer: string
+  placeholder: string
+  guidance: string // what a strong answer includes — shown after the learner submits
 }
 
-export interface SortItem {
-  text: string
-  side: 'left' | 'right'
-}
-
-export interface SortQuestion {
-  type: 'sort'
-  prompt: string
-  leftLabel: string
-  rightLabel: string
-  items: SortItem[]
-}
-
-export type Question = McQuestion | OrderQuestion | FillQuestion | SortQuestion
+export type Question = McQuestion | TfQuestion | ShortQuestion
 
 export interface InfoStep {
   kind: 'info'
@@ -51,19 +40,11 @@ export interface QuestionStep {
   question: Question
 }
 
-export interface MicroTaskStep {
-  kind: 'microtask'
-  title: string
-  prompt: string
-  placeholder: string
-  platform: string
-}
-
-export type LessonStep = InfoStep | QuestionStep | MicroTaskStep
+export type LessonStep = InfoStep | QuestionStep
 
 export interface Lesson {
   id: string
-  unitId: string
+  moduleId: string
   trackId: string
   title: string
   subtitle: string
@@ -72,20 +53,47 @@ export interface Lesson {
   steps: LessonStep[]
 }
 
-export interface PortfolioPieceDef {
+export interface EndTaskPrompt {
+  label: string
+  placeholder: string
+}
+
+interface EndTaskBase {
   id: string
+  moduleId: string
+  trackId: string
   title: string
   description: string
   deliverableType: string
+  xp: number
 }
 
-export interface Unit {
+export interface BuilderEndTask extends EndTaskBase {
+  kind: 'builder'
+  brief: string
+  prompts: EndTaskPrompt[]
+}
+
+export interface SimulatorEndTask extends EndTaskBase {
+  kind: 'simulator'
+  brief: string
+}
+
+export interface MultiCaptionEndTask extends EndTaskBase {
+  kind: 'multi-caption'
+  brief: string
+  count: number
+}
+
+export type EndTask = BuilderEndTask | SimulatorEndTask | MultiCaptionEndTask
+
+export interface Module {
   id: string
   trackId: string
   title: string
   description: string
   lessonIds: string[]
-  portfolioPiece: PortfolioPieceDef
+  endTaskId: string
 }
 
 export interface Track {
@@ -93,17 +101,7 @@ export interface Track {
   title: string
   tagline: string
   description: string
-  emoji: string
-  color: string
-  unitIds: string[]
-}
-
-export interface Template {
-  id: string
-  title: string
-  description: string
-  category: string
-  unlockUnitId: string | null // null = unlocked from the start
-  emoji: string
-  body: string
+  icon: LucideIcon
+  pastelIndex: number
+  moduleIds: string[]
 }

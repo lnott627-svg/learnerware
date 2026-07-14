@@ -1,44 +1,40 @@
 @import "tailwindcss";
 
 @theme {
-  --font-display: "Baloo 2", "Segoe UI", system-ui, sans-serif;
-  --font-body: "Manrope", "Segoe UI", system-ui, sans-serif;
+  --font-display: "Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
 
-  /* brand */
-  --color-brand-50: #f4f0ff;
-  --color-brand-100: #e9e0ff;
-  --color-brand-200: #d1bfff;
-  --color-brand-300: #b494ff;
-  --color-brand-400: #9865ff;
-  --color-brand-500: #7c3aed;
-  --color-brand-600: #6b28d9;
-  --color-brand-700: #571db3;
-  --color-brand-800: #421690;
-  --color-brand-900: #2f0f68;
+  /* ink / neutrals */
+  --color-ink-950: #0f0e13;
+  --color-ink-900: #17151d;
+  --color-ink-700: #3a3742;
+  --color-ink-500: #6b6874;
+  --color-ink-300: #a6a3ad;
+  --color-ink-200: #d7d5da;
+  --color-ink-100: #ececee;
+  --color-paper-50: #fafafa;
+  --color-paper-0: #ffffff;
 
-  /* xp / success */
-  --color-xp-300: #d9f99d;
-  --color-xp-400: #bef264;
-  --color-xp-500: #a3e635;
-  --color-xp-600: #84cc16;
-  --color-xp-700: #65a30d;
+  /* pastel accents — rotate per card, never combine */
+  --color-pink-100: #ffe4e4;
+  --color-pink-200: #ffd6d6;
+  --color-pink-600: #e0566b;
+  --color-mint-100: #dcf6e8;
+  --color-mint-200: #c8f2dc;
+  --color-mint-600: #1f9d63;
+  --color-yellow-100: #fef3d6;
+  --color-yellow-200: #fdecb8;
+  --color-yellow-600: #b8860e;
+  --color-coral-100: #ffe2d1;
+  --color-coral-200: #ffd2b8;
+  --color-coral-600: #d1621f;
+  --color-lilac-100: #ece4ff;
+  --color-lilac-200: #ddccff;
+  --color-lilac-600: #6c47c9;
 
-  /* streak */
-  --color-streak-400: #fbbf24;
-  --color-streak-500: #f59e0b;
-  --color-streak-600: #d97706;
-
-  /* surfaces */
-  --color-ink-900: #1c1530;
-  --color-ink-700: #3c3153;
-  --color-ink-500: #6b6180;
-  --color-ink-300: #a89fbc;
-  --color-cloud-50: #fbfaff;
-  --color-cloud-100: #f4f1ff;
-  --color-cloud-200: #ece6fb;
-
-  --shadow-pop: 0 6px 0 0 rgb(0 0 0 / 0.08);
-  --shadow-card: 0 2px 10px 0 rgb(28 21 48 / 0.06);
+  --shadow-card: 0 2px 8px 0 rgb(15 14 19 / 0.05), 0 10px 24px -12px rgb(15 14 19 / 0.08);
+  --shadow-nav: 0 12px 30px -8px rgb(15 14 19 / 0.35);
+  --shadow-pop: 0 4px 0 0 rgb(15 14 19 / 0.9);
 }
 
 :root {
@@ -56,7 +52,7 @@ html,
 body {
   margin: 0;
   padding: 0;
-  background: var(--color-cloud-50);
+  background: var(--color-paper-50);
   color: var(--color-ink-900);
   overscroll-behavior-y: none;
 }
@@ -76,7 +72,7 @@ button {
   width: 100%;
   min-height: 100dvh;
   margin: 0 auto;
-  background: var(--color-cloud-50);
+  background: var(--color-paper-50);
   position: relative;
   display: flex;
   flex-direction: column;
@@ -84,7 +80,7 @@ button {
 
 @media (min-width: 640px) {
   html {
-    background: linear-gradient(160deg, var(--color-brand-700), var(--color-brand-900));
+    background: linear-gradient(160deg, #e4e2ea, #cfccd8);
   }
 
   .app-shell {
@@ -92,7 +88,7 @@ button {
     min-height: 100dvh;
     margin: 24px auto;
     border-radius: 40px;
-    box-shadow: 0 30px 60px -20px rgb(0 0 0 / 0.5), 0 0 0 10px rgb(0 0 0 / 0.85);
+    box-shadow: 0 30px 60px -20px rgb(0 0 0 / 0.35), 0 0 0 10px rgb(0 0 0 / 0.9);
     overflow: hidden;
     min-height: calc(100dvh - 48px);
   }
