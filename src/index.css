@@ -1,0 +1,104 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Baloo 2", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Manrope", "Segoe UI", system-ui, sans-serif;
+
+  /* brand */
+  --color-brand-50: #f4f0ff;
+  --color-brand-100: #e9e0ff;
+  --color-brand-200: #d1bfff;
+  --color-brand-300: #b494ff;
+  --color-brand-400: #9865ff;
+  --color-brand-500: #7c3aed;
+  --color-brand-600: #6b28d9;
+  --color-brand-700: #571db3;
+  --color-brand-800: #421690;
+  --color-brand-900: #2f0f68;
+
+  /* xp / success */
+  --color-xp-300: #d9f99d;
+  --color-xp-400: #bef264;
+  --color-xp-500: #a3e635;
+  --color-xp-600: #84cc16;
+  --color-xp-700: #65a30d;
+
+  /* streak */
+  --color-streak-400: #fbbf24;
+  --color-streak-500: #f59e0b;
+  --color-streak-600: #d97706;
+
+  /* surfaces */
+  --color-ink-900: #1c1530;
+  --color-ink-700: #3c3153;
+  --color-ink-500: #6b6180;
+  --color-ink-300: #a89fbc;
+  --color-cloud-50: #fbfaff;
+  --color-cloud-100: #f4f1ff;
+  --color-cloud-200: #ece6fb;
+
+  --shadow-pop: 0 6px 0 0 rgb(0 0 0 / 0.08);
+  --shadow-card: 0 2px 10px 0 rgb(28 21 48 / 0.06);
+}
+
+:root {
+  color-scheme: light;
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--color-cloud-50);
+  color: var(--color-ink-900);
+  overscroll-behavior-y: none;
+}
+
+#root {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+button {
+  font-family: inherit;
+}
+
+/* app shell: full-bleed on real mobile widths, framed like a phone on wide desktop viewports */
+.app-shell {
+  width: 100%;
+  min-height: 100dvh;
+  margin: 0 auto;
+  background: var(--color-cloud-50);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 640px) {
+  html {
+    background: linear-gradient(160deg, var(--color-brand-700), var(--color-brand-900));
+  }
+
+  .app-shell {
+    max-width: 430px;
+    min-height: 100dvh;
+    margin: 24px auto;
+    border-radius: 40px;
+    box-shadow: 0 30px 60px -20px rgb(0 0 0 / 0.5), 0 0 0 10px rgb(0 0 0 / 0.85);
+    overflow: hidden;
+    min-height: calc(100dvh - 48px);
+  }
+}
+
+::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
