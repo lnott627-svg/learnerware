@@ -2,6 +2,10 @@
 
 A mobile-first edtech app that teaches digital marketing, social media management, freelancing, content creation, and personal branding — with a focus on real income and a real portfolio of work.
 
+This repo has two apps sharing one curriculum:
+- **This directory** — the web app (React + Vite), responsive/mobile-first, deployable to Vercel.
+- **`mobile/`** — the native app (Expo Router + React Native), for testing on a real phone via Expo Go. See [`mobile/README.md`](mobile/README.md) for setup.
+
 ## Stack
 
 - React + TypeScript + Vite
