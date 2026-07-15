@@ -4,8 +4,11 @@ import { Lightbulb, Check } from 'lucide-react-native'
 import type { InfoStep } from '../../data/types'
 import Button from '../Button'
 import { colors } from '../../lib/colors'
+import { personalize, useOutcome } from '../../lib/personalize'
 
 export default function InfoStepView({ step, onNext }: { step: InfoStep; onNext: () => void }) {
+  const outcome = useOutcome()
+  const body = personalize(step.body, step.bodyVariants, outcome)
   return (
     <View className="flex-1">
       <ScrollView className="flex-1 px-6 pt-4" contentContainerStyle={{ paddingBottom: 24 }}>
@@ -16,7 +19,7 @@ export default function InfoStepView({ step, onNext }: { step: InfoStep; onNext:
           <Text className="font-jakarta-extrabold text-2xl text-ink-950 mb-3 leading-tight">
             {step.heading}
           </Text>
-          <Text className="text-ink-500 text-[15px] leading-relaxed mb-5">{step.body}</Text>
+          <Text className="text-ink-500 text-[15px] leading-relaxed mb-5">{body}</Text>
           {step.bullets && (
             <View className="gap-3">
               {step.bullets.map((b, i) => (

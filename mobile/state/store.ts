@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { getModule, lessons } from '../data/content'
+import type { Outcome } from '../data/types'
 
 export type Pace = 'chill' | 'steady' | 'intense'
 
@@ -28,12 +29,44 @@ export interface PortfolioEntry {
   scoreSummary?: string
 }
 
-interface LearnerwareState {
-  accountCreated: boolean
+// ---- Auth scaffold -----------------------------------------------------------
+// This is deliberately backend-free. `signInWith*` currently create a LOCAL mock
+// session so the whole flow is testable on web without a dev build. The real
+// native calls (expo-apple-authentication / expo-auth-session Google) get wired
+// in later behind these same actions — the rest of the app only depends on
+// `isAuthenticated` / `authUser`, so plugging in a real provider (or a backend)
+// is a drop-in replacement that doesn't touch any screens.
+export type AuthProvider = 'apple' | 'google'
+
+export interface AuthUser {
+  id: string
+  provider: AuthProvider
   name: string | null
   email: string | null
+}
 
+interface LearnerwareState {
+  // profile (captured at onboarding step 1, before any auth)
+  name: string | null
+  outcome: Outcome | null
+
+  // auth (lives at the results screen, step 4)
+  authUser: AuthUser | null
+  isAuthenticated: boolean
+
+  // onboarding progress gates
+  hasProfile: boolean // completed step 1 (name + outcome)
+  diagnosticComplete: boolean // completed step 3
+  hasOnboarded: boolean // reached the app proper (post-results)
+
+  // legacy account flag kept so old screens compile; superseded by isAuthenticated
+  accountCreated: boolean
+  email: string | null
+
+  // curriculum placement (from the diagnostic). Everyone shares one track.
   selectedTrackId: string | null
+  placementModuleId: string | null // recommended starting module; earlier ones become optional review
+
   pace: Pace
   paceInferred: boolean
 
@@ -48,12 +81,21 @@ interface LearnerwareState {
   hasCompletedFirstLessonEver: boolean
   lastLessonXpGained: number
 
+  // actions
+  setProfile: (name: string, outcome: Outcome) => void
+  setPlacement: (trackId: string, moduleId: string) => void
+  completeDiagnostic: () => void
+  finishOnboarding: () => void
+  signInWithProvider: (provider: AuthProvider, profile?: { name?: string | null; email?: string | null }) => void
+  signOut: () => void
+
   selectTrack: (trackId: string) => void
   completeLesson: (lessonId: string, result: LessonResult) => void
   submitEndTask: (entry: Omit<PortfolioEntry, 'id' | 'createdAt'>, xpReward: number) => void
   createAccount: (name: string, email: string) => void
   setPace: (pace: Pace) => void
   resetProgress: () => void
+  resetEverything: () => void // clears profile + onboarding + progress (used to restart onboarding)
 }
 
 function todayISO() {
@@ -79,27 +121,72 @@ function bumpStreak(lastActiveDate: string | null, streakCount: number) {
   return 1
 }
 
+const initialState = {
+  name: null,
+  outcome: null,
+
+  authUser: null,
+  isAuthenticated: false,
+
+  hasProfile: false,
+  diagnosticComplete: false,
+  hasOnboarded: false,
+
+  accountCreated: false,
+  email: null,
+
+  selectedTrackId: null,
+  placementModuleId: null,
+
+  pace: 'steady' as Pace,
+  paceInferred: false,
+
+  xp: 0,
+  streakCount: 0,
+  lastActiveDate: null,
+
+  completedLessonIds: [] as string[],
+  completedModuleIds: [] as string[],
+  portfolio: [] as PortfolioEntry[],
+
+  hasCompletedFirstLessonEver: false,
+  lastLessonXpGained: 0,
+}
+
 export const useStore = create<LearnerwareState>()(
   persist(
     (set, get) => ({
-      accountCreated: false,
-      name: null,
-      email: null,
+      ...initialState,
 
-      selectedTrackId: null,
-      pace: 'steady',
-      paceInferred: false,
+      setProfile: (name, outcome) =>
+        set({ name: name.trim(), outcome, hasProfile: true }),
 
-      xp: 0,
-      streakCount: 0,
-      lastActiveDate: null,
+      setPlacement: (trackId, moduleId) =>
+        set({ selectedTrackId: trackId, placementModuleId: moduleId }),
 
-      completedLessonIds: [],
-      completedModuleIds: [],
-      portfolio: [],
+      completeDiagnostic: () => set({ diagnosticComplete: true }),
 
-      hasCompletedFirstLessonEver: false,
-      lastLessonXpGained: 0,
+      finishOnboarding: () => set({ hasOnboarded: true }),
+
+      // Mock sign-in for now (see AuthUser comment above). Keeps the learner's
+      // existing local progress intact and just attaches an identity.
+      signInWithProvider: (provider, profile) => {
+        const state = get()
+        set({
+          isAuthenticated: true,
+          accountCreated: true,
+          authUser: {
+            id: `${provider}-${Date.now()}`,
+            provider,
+            name: profile?.name ?? state.name,
+            email: profile?.email ?? state.email,
+          },
+          email: profile?.email ?? state.email,
+          hasOnboarded: true,
+        })
+      },
+
+      signOut: () => set({ isAuthenticated: false, authUser: null }),
 
       selectTrack: (trackId) => set({ selectedTrackId: trackId }),
 
@@ -164,12 +251,14 @@ export const useStore = create<LearnerwareState>()(
         })
       },
 
+      // legacy — kept so the old lesson-complete signup path still compiles.
       createAccount: (name, email) => set({ accountCreated: true, name, email }),
       setPace: (pace) => set({ pace, paceInferred: false }),
 
       resetProgress: () =>
         set({
           selectedTrackId: null,
+          placementModuleId: null,
           xp: 0,
           streakCount: 0,
           lastActiveDate: null,
@@ -180,10 +269,17 @@ export const useStore = create<LearnerwareState>()(
           pace: 'steady',
           paceInferred: false,
         }),
+
+      resetEverything: () => set({ ...initialState }),
     }),
     {
-      name: 'learnerware-state-v2',
+      name: 'learnerware-state-v3',
       storage: createJSONStorage(() => AsyncStorage),
+      version: 3,
+      // Pre-release: the v2→v3 shape change (outcome, auth, onboarding, new
+      // curriculum) isn't worth a field-by-field migration, so we reset to a
+      // clean state on upgrade. Old test progress is intentionally discarded.
+      migrate: () => ({ ...initialState }) as unknown as LearnerwareState,
     },
   ),
 )

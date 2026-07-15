@@ -3,7 +3,7 @@ import { View, Text, ScrollView, Pressable } from 'react-native'
 import { router, Redirect } from 'expo-router'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { ArrowUpRight, Lock, Check, Trophy } from 'lucide-react-native'
-import { getTrack, modulesForTrack, lessonsForModule, endTaskForModule } from '../../data/content'
+import { getTrack, modulesForTrack, lessonsForModule, endTaskForModule, PRIMARY_TRACK_ID } from '../../data/content'
 import { useStore } from '../../state/store'
 import { isModuleLessonsComplete, moduleProgress, trackProgress } from '../../lib/progress'
 import { pastelColorFor, colors } from '../../lib/colors'
@@ -20,11 +20,11 @@ export default function Home() {
   const completedLessonIds = useStore((s) => s.completedLessonIds)
   const completedModuleIds = useStore((s) => s.completedModuleIds)
 
-  const track = selectedTrackId ? getTrack(selectedTrackId) : undefined
-  const trackModules = useMemo(
-    () => (selectedTrackId ? modulesForTrack(selectedTrackId) : []),
-    [selectedTrackId],
-  )
+  // Single shared curriculum: fall back to the primary track if placement
+  // hasn't set one yet (keeps the app coherent without a track-picker screen).
+  const trackId = selectedTrackId ?? PRIMARY_TRACK_ID
+  const track = getTrack(trackId)
+  const trackModules = useMemo(() => modulesForTrack(trackId), [trackId])
 
   const current = useMemo(() => {
     for (const mod of trackModules) {
@@ -38,7 +38,7 @@ export default function Home() {
     return null
   }, [trackModules, completedLessonIds, completedModuleIds])
 
-  if (!selectedTrackId || !track) return <Redirect href="/tracks" />
+  if (!track) return <Redirect href="/" />
 
   const overallProgress = Math.round(
     trackProgress(track.moduleIds, completedLessonIds, completedModuleIds) * 100,

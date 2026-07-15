@@ -29,8 +29,7 @@ export default function Profile() {
   const pace = useStore((s) => s.pace)
   const paceInferred = useStore((s) => s.paceInferred)
   const setPace = useStore((s) => s.setPace)
-  const selectedTrackId = useStore((s) => s.selectedTrackId)
-  const resetProgress = useStore((s) => s.resetProgress)
+  const resetEverything = useStore((s) => s.resetEverything)
 
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const [openPieceId, setOpenPieceId] = useState<string | null>(null)
@@ -41,18 +40,18 @@ export default function Profile() {
     setTimeout(() => setCopiedId(null), 1500)
   }
 
-  const handleSwitchTrack = () => {
+  const handleRestartOnboarding = () => {
     Alert.alert(
-      'Switch tracks?',
-      'Your XP and portfolio stay, but path progress resets.',
+      'Restart onboarding?',
+      'This clears your profile, placement, XP, and portfolio, and takes you back to the start.',
       [
         { text: 'Cancel', style: 'cancel' },
         {
-          text: 'Switch',
+          text: 'Restart',
           style: 'destructive',
           onPress: () => {
-            resetProgress()
-            router.replace('/tracks')
+            resetEverything()
+            router.replace('/')
           },
         },
       ],
@@ -220,11 +219,9 @@ export default function Profile() {
           </View>
         </View>
 
-        {selectedTrackId && (
-          <Pressable onPress={handleSwitchTrack} className="py-2">
-            <Text className="text-ink-300 text-sm font-jakarta-medium text-center">Switch track</Text>
-          </Pressable>
-        )}
+        <Pressable onPress={handleRestartOnboarding} className="py-2">
+          <Text className="text-ink-300 text-sm font-jakarta-medium text-center">Restart onboarding</Text>
+        </Pressable>
       </ScrollView>
     </View>
   )

@@ -1,9 +1,8 @@
-import { useState } from 'react'
-import { View, Text, TextInput, Pressable, KeyboardAvoidingView, Platform } from 'react-native'
+import { View, Text, Pressable } from 'react-native'
 import { router, useLocalSearchParams } from 'expo-router'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { MotiView } from 'moti'
-import { PartyPopper, Lock, ArrowUpRight } from 'lucide-react-native'
+import { PartyPopper, ArrowUpRight } from 'lucide-react-native'
 import { getLesson, getModule } from '../../../data/content'
 import { useStore } from '../../../state/store'
 import { isModuleLessonsComplete } from '../../../lib/progress'
@@ -13,24 +12,19 @@ import Button from '../../../components/Button'
 import Confetti from '../../../components/Confetti'
 import { StreakBadge } from '../../../components/Badges'
 
+// Auth/signup now lives entirely in onboarding (results screen), so this screen
+// is purely the completion celebration — no more inline account prompt.
 export default function LessonComplete() {
   const { lessonId } = useLocalSearchParams<{ lessonId: string }>()
   const insets = useSafeAreaInsets()
   const lesson = lessonId ? getLesson(lessonId) : undefined
 
-  const accountCreated = useStore((s) => s.accountCreated)
-  const createAccount = useStore((s) => s.createAccount)
   const xpGained = useStore((s) => s.lastLessonXpGained)
   const streakCount = useStore((s) => s.streakCount)
   const completedLessonIds = useStore((s) => s.completedLessonIds)
 
-  const [phase, setPhase] = useState<'celebrate' | 'signup'>('celebrate')
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-
   const animatedXp = useCountUp(xpGained)
 
-  const isFirstLessonCompletion = completedLessonIds.length === 1
   const mod = lesson ? getModule(lesson.moduleId) : undefined
   const justUnlockedEndTask = mod ? isModuleLessonsComplete(mod.id, completedLessonIds) : false
 
@@ -38,63 +32,6 @@ export default function LessonComplete() {
 
   const goHome = () => router.replace('/home')
   const goToEndTask = () => router.replace(`/module/${mod.id}/task`)
-
-  const handleCreateAccount = () => {
-    if (!name.trim() || !email.trim()) return
-    createAccount(name.trim(), email.trim())
-    goHome()
-  }
-
-  if (phase === 'signup') {
-    return (
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        className="flex-1 bg-paper-50"
-      >
-        <View className="flex-1 px-6 pb-8" style={{ paddingTop: insets.top + 24 }}>
-          <Pressable onPress={() => setPhase('celebrate')} className="mb-6 self-start">
-            <Text className="text-ink-300 text-sm font-jakarta-medium">Back</Text>
-          </Pressable>
-          <View className="w-14 h-14 rounded-2xl bg-lilac-200 items-center justify-center mb-5">
-            <Lock size={22} strokeWidth={2.25} color={colors.lilac[600]} />
-          </View>
-          <Text className="font-jakarta-extrabold text-2xl text-ink-950 mb-2">Save your progress</Text>
-          <Text className="text-ink-500 text-[15px] leading-relaxed mb-7">
-            You've already earned {animatedXp} XP. Create a free account so it doesn't disappear.
-          </Text>
-
-          <View className="gap-3">
-            <TextInput
-              value={name}
-              onChangeText={setName}
-              placeholder="First name"
-              placeholderTextColor={colors.ink[300]}
-              className="rounded-2xl px-4 py-3.5 text-[15px] text-ink-950"
-              style={{ borderWidth: 2, borderColor: colors.ink[200], backgroundColor: '#fff' }}
-            />
-            <TextInput
-              value={email}
-              onChangeText={setEmail}
-              placeholder="Email address"
-              placeholderTextColor={colors.ink[300]}
-              autoCapitalize="none"
-              keyboardType="email-address"
-              className="rounded-2xl px-4 py-3.5 text-[15px] text-ink-950"
-              style={{ borderWidth: 2, borderColor: colors.ink[200], backgroundColor: '#fff' }}
-            />
-            <View className="mt-4">
-              <Button disabled={!name.trim() || !email.trim()} onPress={handleCreateAccount}>
-                Save my progress
-              </Button>
-            </View>
-          </View>
-          <Pressable onPress={goHome} className="mt-4">
-            <Text className="text-ink-300 text-sm font-jakarta-medium text-center">Maybe later</Text>
-          </Pressable>
-        </View>
-      </KeyboardAvoidingView>
-    )
-  }
 
   return (
     <View className="flex-1 bg-ink-950 px-6 pb-8" style={{ paddingTop: insets.top + 24 }}>
@@ -155,24 +92,9 @@ export default function LessonComplete() {
       </View>
 
       <View>
-        {!accountCreated && isFirstLessonCompletion ? (
-          <>
-            <View className="mb-3">
-              <Button variant="secondary" onPress={() => setPhase('signup')}>
-                Save my progress
-              </Button>
-            </View>
-            <Pressable onPress={goHome}>
-              <Text className="text-center text-sm font-jakarta-medium" style={{ color: 'rgba(255,255,255,0.6)' }}>
-                Maybe later
-              </Text>
-            </Pressable>
-          </>
-        ) : (
-          <Button variant="secondary" onPress={goHome}>
-            Continue
-          </Button>
-        )}
+        <Button variant="secondary" onPress={goHome}>
+          Continue
+        </Button>
       </View>
     </View>
   )

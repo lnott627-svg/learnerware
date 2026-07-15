@@ -1,5 +1,14 @@
 import type { LucideIcon } from 'lucide-react-native'
 
+// The outcome the learner picks during onboarding. Used ONLY to lightly reframe
+// intros, examples, and portfolio framing — never to branch the curriculum.
+// Everyone gets the same modules, lessons, and tasks.
+export type Outcome = 'freelancer' | 'business' | 'marketer'
+
+// A field that can optionally be personalised per outcome. When a variant for the
+// active outcome is missing, the default value is used. See lib/personalize.ts.
+export type OutcomeVariants<T> = Partial<Record<Outcome, T>>
+
 export type QuestionType = 'mc' | 'tf' | 'short'
 
 export interface McQuestion {
@@ -32,6 +41,10 @@ export interface InfoStep {
   kind: 'info'
   heading: string
   body: string
+  // Optional per-outcome override of `body`. Lets us reframe an intro for a
+  // freelancer vs. a business owner vs. an in-house marketer without forking
+  // the lesson. Falls back to `body` when the active outcome has no variant.
+  bodyVariants?: OutcomeVariants<string>
   bullets?: string[]
 }
 
@@ -66,6 +79,9 @@ interface EndTaskBase {
   description: string
   deliverableType: string
   xp: number
+  // Optional per-outcome reframing of the scenario brief (e.g. "your client's
+  // café" vs. "your café" vs. "a café your team supports"). Falls back to `brief`.
+  briefVariants?: OutcomeVariants<string>
 }
 
 export interface BuilderEndTask extends EndTaskBase {

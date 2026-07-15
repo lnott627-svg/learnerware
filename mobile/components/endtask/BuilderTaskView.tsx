@@ -5,6 +5,7 @@ import type { BuilderEndTask } from '../../data/types'
 import Button from '../Button'
 import Card from '../Card'
 import { colors } from '../../lib/colors'
+import { personalize, useOutcome } from '../../lib/personalize'
 
 export default function BuilderTaskView({
   task,
@@ -13,6 +14,8 @@ export default function BuilderTaskView({
   task: BuilderEndTask
   onSubmit: (content: string) => void
 }) {
+  const outcome = useOutcome()
+  const brief = personalize(task.brief, task.briefVariants, outcome)
   const [answers, setAnswers] = useState<string[]>(() => task.prompts.map(() => ''))
   const allFilled = answers.every((a) => a.trim().length > 0)
 
@@ -26,7 +29,7 @@ export default function BuilderTaskView({
       <ScrollView className="flex-1 px-6" contentContainerStyle={{ paddingBottom: 24 }}>
         <Card className="mb-6 flex-row gap-3" style={{ backgroundColor: colors.lilac[100], shadowOpacity: 0 }}>
           <FileText size={18} strokeWidth={2.25} color={colors.lilac[600]} style={{ marginTop: 2 }} />
-          <Text className="text-sm text-ink-700 leading-relaxed flex-1">{task.brief}</Text>
+          <Text className="text-sm text-ink-700 leading-relaxed flex-1">{brief}</Text>
         </Card>
 
         <View className="gap-5">
