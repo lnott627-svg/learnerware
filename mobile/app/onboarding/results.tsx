@@ -1,16 +1,19 @@
+import { useState } from 'react'
 import { View, Text, Pressable } from 'react-native'
 import { router } from 'expo-router'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { MotiView } from 'moti'
 import { Sparkles, Apple } from 'lucide-react-native'
-import { useStore } from '../../state/store'
+import { useStore, type AuthProvider } from '../../state/store'
 import { getModule, modulesForTrack } from '../../data/content'
 import { colors } from '../../lib/colors'
+import { signIn } from '../../lib/auth'
 import Button from '../../components/Button'
 
 // Onboarding step 4 — results + sign-up. Auth lives HERE, not at app open.
-// Auth is currently a local mock (see store signInWithProvider). If the user
-// skips, they still enter the app; the root gate re-prompts here next cold open.
+// Sign-in routes through lib/auth's feature-detected seam: real native provider
+// when a dev build supports it, working mock on web/Expo Go. If the user skips,
+// they still enter the app; the root gate re-prompts here next cold open.
 export default function OnboardingResults() {
   const insets = useSafeAreaInsets()
   const name = useStore((s) => s.name)
@@ -18,6 +21,8 @@ export default function OnboardingResults() {
   const selectedTrackId = useStore((s) => s.selectedTrackId)
   const signInWithProvider = useStore((s) => s.signInWithProvider)
   const finishOnboarding = useStore((s) => s.finishOnboarding)
+
+  const [pending, setPending] = useState<AuthProvider | null>(null)
 
   const mod = placementModuleId ? getModule(placementModuleId) : undefined
   const moduleIndex =
@@ -27,8 +32,15 @@ export default function OnboardingResults() {
 
   const enterApp = () => router.replace('/home')
 
-  const handleSignIn = (provider: 'apple' | 'google') => {
-    signInWithProvider(provider)
+  const handleSignIn = async (provider: AuthProvider) => {
+    if (pending) return
+    setPending(provider)
+    const result = await signIn(provider)
+    setPending(null)
+    if (result.canceled) return // user backed out of the native sheet — stay put
+    // Even a failed native attempt still lets them in with local progress; the
+    // provider only *upgrades* the identity when it succeeds.
+    signInWithProvider(provider, result.profile)
     enterApp()
   }
 
@@ -73,15 +85,17 @@ export default function OnboardingResults() {
           Save your progress and portfolio to your account:
         </Text>
         <View className="mb-2.5">
-          <Button onPress={() => handleSignIn('apple')}>
+          <Button onPress={() => handleSignIn('apple')} disabled={pending !== null}>
             <View className="flex-row items-center justify-center gap-2">
               <Apple size={18} strokeWidth={2.25} color="#ffffff" />
-              <Text className="font-jakarta-bold text-base text-white">Sign in with Apple</Text>
+              <Text className="font-jakarta-bold text-base text-white">
+                {pending === 'apple' ? 'Signing in…' : 'Sign in with Apple'}
+              </Text>
             </View>
           </Button>
         </View>
-        <Button variant="secondary" onPress={() => handleSignIn('google')}>
-          Continue with Google
+        <Button variant="secondary" onPress={() => handleSignIn('google')} disabled={pending !== null}>
+          {pending === 'google' ? 'Signing in…' : 'Continue with Google'}
         </Button>
         <Pressable onPress={handleSkip} className="mt-4 py-2">
           <Text className="text-center text-ink-300 text-sm font-jakarta-medium">Maybe later</Text>
