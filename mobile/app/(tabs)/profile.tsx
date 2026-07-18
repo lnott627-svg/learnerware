@@ -64,7 +64,7 @@ export default function Profile() {
         <View className="w-14 h-14 rounded-2xl items-center justify-center mb-3" style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}>
           <User size={22} strokeWidth={2.25} color="#ffffff" />
         </View>
-        <Text className="font-jakarta-extrabold text-xl text-white">
+        <Text className="font-display text-3xl text-white">
           {accountCreated ? name : 'Welcome, guest'}
         </Text>
         <Text className="text-sm mb-4" style={{ color: 'rgba(255,255,255,0.5)' }}>

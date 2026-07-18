@@ -51,7 +51,7 @@ export default function Home() {
       <View className="px-6 pb-2 flex-row items-center justify-between" style={{ paddingTop: insets.top + 20 }}>
         <View>
           <Text className="text-ink-300 text-xs font-jakarta-medium">{track.title}</Text>
-          <Text className="font-jakarta-extrabold text-2xl text-ink-950">Hello{name ? `, ${name}` : ''}</Text>
+          <Text className="font-display text-3xl text-ink-950">Hello{name ? `, ${name}` : ''}</Text>
         </View>
         <View className="flex-row items-center gap-2">
           <StreakBadge streak={streakCount} />

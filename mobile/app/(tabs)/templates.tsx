@@ -26,7 +26,7 @@ export default function Templates() {
   return (
     <View className="flex-1 bg-paper-50">
       <View className="px-6 pb-4" style={{ paddingTop: insets.top + 20 }}>
-        <Text className="font-jakarta-extrabold text-xl text-ink-950">Templates</Text>
+        <Text className="font-display text-3xl text-ink-950">Templates</Text>
         <Text className="text-ink-500 text-sm mt-0.5">
           Real tools, unlocked as you finish modules — no separate paywall.
         </Text>

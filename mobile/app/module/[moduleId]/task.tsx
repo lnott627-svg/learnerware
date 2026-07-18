@@ -74,7 +74,7 @@ export default function EndTask() {
         >
           <Trophy size={30} strokeWidth={2} color="#ffffff" />
         </MotiView>
-        <Text className="font-jakarta-extrabold text-2xl text-white mb-1">Added to My Portfolio</Text>
+        <Text className="font-display text-3xl text-white mb-1">Added to My Portfolio</Text>
         <Text className="text-sm mb-8" style={{ color: 'rgba(255,255,255,0.6)' }}>
           {task.title}
         </Text>

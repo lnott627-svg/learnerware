@@ -22,7 +22,7 @@ export default function ShortQuestionView({
         <Text className="text-xs font-jakarta-bold text-ink-300 uppercase tracking-wide mb-3">
           Short answer
         </Text>
-        <Text className="font-jakarta-extrabold text-2xl text-ink-950 mb-5 leading-snug">
+        <Text className="font-display text-3xl text-ink-950 mb-5 leading-snug">
           {question.prompt}
         </Text>
 

@@ -16,7 +16,7 @@ export default function InfoStepView({ step, onNext }: { step: InfoStep; onNext:
           <View className="w-14 h-14 rounded-2xl bg-lilac-200 items-center justify-center mb-5">
             <Lightbulb size={24} strokeWidth={2.25} color={colors.lilac[600]} />
           </View>
-          <Text className="font-jakarta-extrabold text-2xl text-ink-950 mb-3 leading-tight">
+          <Text className="font-display text-3xl text-ink-950 mb-3 leading-tight">
             {step.heading}
           </Text>
           <Text className="text-ink-500 text-[15px] leading-relaxed mb-5">{body}</Text>

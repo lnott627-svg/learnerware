@@ -36,7 +36,7 @@ export default function OnboardingProfile() {
         contentContainerStyle={{ paddingTop: insets.top + 32, paddingHorizontal: 24, paddingBottom: 24 }}
         keyboardShouldPersistTaps="handled"
       >
-        <Text className="font-jakarta-extrabold text-2xl text-ink-950 mb-1.5">Let's set you up</Text>
+        <Text className="font-display text-3xl text-ink-950 mb-1.5">Let's set you up</Text>
         <Text className="text-ink-500 text-[15px] mb-7">
           Two quick things so we can tailor examples to you. No account needed yet.
         </Text>

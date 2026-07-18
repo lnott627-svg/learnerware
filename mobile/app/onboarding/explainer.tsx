@@ -62,7 +62,7 @@ export default function OnboardingExplainer() {
               <View className="w-16 h-16 rounded-3xl bg-lilac-200 items-center justify-center mb-6">
                 <Icon size={28} strokeWidth={2.25} color={colors.lilac[600]} />
               </View>
-              <Text className="font-jakarta-extrabold text-2xl text-ink-950 text-center mb-3">{card.title}</Text>
+              <Text className="font-display text-3xl text-ink-950 text-center mb-3">{card.title}</Text>
               <Text className="text-ink-500 text-[15px] leading-relaxed text-center">{card.body}</Text>
             </View>
           )

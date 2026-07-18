@@ -11,11 +11,23 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        'jakarta-regular': ['PlusJakartaSans_400Regular'],
-        'jakarta-medium': ['PlusJakartaSans_500Medium'],
-        'jakarta-semibold': ['PlusJakartaSans_600SemiBold'],
-        'jakarta-bold': ['PlusJakartaSans_700Bold'],
-        'jakarta-extrabold': ['PlusJakartaSans_800ExtraBold'],
+        // Instrument Serif — H1 / display titles (Regular only).
+        display: ['InstrumentSerif_400Regular'],
+        serif: ['InstrumentSerif_400Regular'],
+        // Host Grotesk — H2, body, labels, emphasis.
+        'host-regular': ['HostGrotesk_400Regular'],
+        'host-medium': ['HostGrotesk_500Medium'],
+        'host-semibold': ['HostGrotesk_600SemiBold'],
+        'host-bold': ['HostGrotesk_700Bold'],
+        'host-extrabold': ['HostGrotesk_800ExtraBold'],
+        // Legacy jakarta-* names repointed to Host Grotesk so existing classes
+        // keep working without a repo-wide rename (regular/body, medium=H2,
+        // bold/extrabold = emphasis like numbers, badges, buttons).
+        'jakarta-regular': ['HostGrotesk_400Regular'],
+        'jakarta-medium': ['HostGrotesk_500Medium'],
+        'jakarta-semibold': ['HostGrotesk_600SemiBold'],
+        'jakarta-bold': ['HostGrotesk_700Bold'],
+        'jakarta-extrabold': ['HostGrotesk_800ExtraBold'],
       },
       colors: {
         ink: {
@@ -31,31 +43,19 @@ module.exports = {
           50: '#fafafa',
           0: '#ffffff',
         },
-        pink: {
-          100: '#ffe4e4',
-          200: '#ffd6d6',
-          600: '#e0566b',
-        },
-        mint: {
-          100: '#dcf6e8',
-          200: '#c8f2dc',
-          600: '#1f9d63',
-        },
-        yellow: {
-          100: '#fef3d6',
-          200: '#fdecb8',
-          600: '#b8860e',
-        },
-        coral: {
-          100: '#ffe2d1',
-          200: '#ffd2b8',
-          600: '#d1621f',
-        },
-        lilac: {
-          100: '#ece4ff',
-          200: '#ddccff',
-          600: '#6c47c9',
-        },
+        // Brand palette (100 tint / 200 card bg / 600 saturated fg).
+        rose: { 100: '#F8E4EA', 200: '#EFC8D1', 600: '#C1506B' },
+        brick: { 100: '#F4DFDF', 200: '#E6BEBF', 600: '#BE393B' },
+        orange: { 100: '#FAEAD8', 200: '#F3D4B4', 600: '#D76D17' },
+        // Functional state colors (correct / completion).
+        success: { 100: '#E3F1E8', 200: '#C7E5D3', 600: '#2E8B57' },
+        // Legacy aliases repointed to the new palette so existing className
+        // color utilities keep resolving. lilac == primary highlight == brick.
+        pink: { 100: '#F8E4EA', 200: '#EFC8D1', 600: '#C1506B' },
+        coral: { 100: '#FAEAD8', 200: '#F3D4B4', 600: '#D76D17' },
+        yellow: { 100: '#FAEAD8', 200: '#F3D4B4', 600: '#D76D17' },
+        lilac: { 100: '#F4DFDF', 200: '#E6BEBF', 600: '#BE393B' },
+        mint: { 100: '#E3F1E8', 200: '#C7E5D3', 600: '#2E8B57' },
       },
     },
   },

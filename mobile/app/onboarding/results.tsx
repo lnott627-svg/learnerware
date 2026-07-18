@@ -61,7 +61,7 @@ export default function OnboardingResults() {
           <Sparkles size={28} strokeWidth={2.25} color={colors.mint[600]} />
         </MotiView>
 
-        <Text className="font-jakarta-extrabold text-2xl text-ink-950 mb-2">
+        <Text className="font-display text-3xl text-ink-950 mb-2">
           {name ? `${name}, you're all set` : "You're all set"}
         </Text>
         <Text className="text-ink-500 text-[15px] leading-relaxed mb-6">
