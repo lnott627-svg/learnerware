@@ -1,6 +1,12 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ['./app/**/*.{js,jsx,ts,tsx}', './components/**/*.{js,jsx,ts,tsx}'],
+  // Use class-based dark mode. Default ('media') makes NativeWind's web runtime
+  // throw "Cannot manually set color scheme, as dark mode is type 'media'",
+  // which pops a full-screen LogBox error overlay on the web dev server and
+  // blocks interaction. The app is light-only, so 'class' (never toggled) just
+  // keeps it light while silencing the crash.
+  darkMode: 'class',
   presets: [require('nativewind/preset')],
   theme: {
     extend: {
