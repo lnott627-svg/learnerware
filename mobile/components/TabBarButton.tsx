@@ -1,5 +1,5 @@
 import { forwardRef } from 'react'
-import { Pressable, Text, View, type PressableProps } from 'react-native'
+import { Pressable, View, type PressableProps } from 'react-native'
 import type { LucideIcon } from 'lucide-react-native'
 
 interface TabBarButtonProps extends PressableProps {
@@ -12,15 +12,16 @@ const TabBarButton = forwardRef<View, TabBarButtonProps>(function TabBarButton(
   { isFocused, Icon, label, ...props },
   ref,
 ) {
+  // Icon-only tab bar — the page title now lives as a heading at the top of each
+  // screen, so we drop the visible label here (kept as accessibilityLabel).
   return (
-    <Pressable ref={ref} {...props} className="flex-1">
+    <Pressable ref={ref} accessibilityLabel={label} {...props} className="flex-1">
       <View
-        className={`flex-row items-center justify-center gap-1.5 rounded-full py-2.5 px-3 ${
+        className={`items-center justify-center rounded-full py-2.5 ${
           isFocused ? 'bg-white' : 'bg-transparent'
         }`}
       >
-        <Icon size={17} strokeWidth={2.25} color={isFocused ? '#0f0e13' : 'rgba(255,255,255,0.55)'} />
-        {isFocused && <Text className="text-white font-jakarta-semibold text-xs" style={{ color: '#0f0e13' }}>{label}</Text>}
+        <Icon size={20} strokeWidth={2.25} color={isFocused ? '#0f0e13' : 'rgba(255,255,255,0.55)'} />
       </View>
     </Pressable>
   )
